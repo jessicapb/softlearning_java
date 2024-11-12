@@ -54,6 +54,9 @@ public abstract class Operation {
     }
 
     public int setDescription(String description) {
+        if(Check.minLenght(description, 5)!=0){
+            return -2;
+        }
         this.description = description;
         return 0;
     }

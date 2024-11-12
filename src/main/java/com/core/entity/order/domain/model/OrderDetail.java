@@ -6,7 +6,7 @@ import com.core.entity.exceptions.BuildException;
 public class OrderDetail {
     protected String namearticles;
     protected int quantity;
-    protected int referencenum;
+    protected String referencenum;
     protected double individualPrice;
     protected int discount;
     protected double total;
@@ -14,7 +14,7 @@ public class OrderDetail {
     protected OrderDetail(){
     }
 
-    public static OrderDetail getInstanceDetail(String namearticles, int quantity, int referencenum, double individualPrice, int discount, double total) throws BuildException{
+    public static OrderDetail getInstanceDetail(String namearticles, int quantity, String referencenum, double individualPrice, int discount, double total) throws BuildException{
         String message = "";
         int error = 0;
         OrderDetail d = new OrderDetail();
@@ -77,13 +77,13 @@ public class OrderDetail {
         return 0;
     }
 
-    public int getReference() {
-        return referencenum;
+    public String getReference() {
+        return this.referencenum;
     }
 
-    public int setReference(int referencenum) {
-        if(Check.isNegative(referencenum) !=0){
-            return -3;
+    public int setReference(String referencenum) {
+        if(Check.minLenght(referencenum, 4) !=0){
+            return -2;
         }
         this.referencenum = referencenum;
         return 0;
@@ -114,7 +114,7 @@ public class OrderDetail {
     }
 
     public double getTotal() {
-        return total;
+        return this.quantity*getIndividualPrice() - this.discount;
     }
 
     public int setTotal(double total) {
@@ -123,5 +123,14 @@ public class OrderDetail {
         }
         this.total = total;
         return 0;
+    }
+
+    public String getDetails(){
+        return "nomarticle" + this.getNamearticles() +
+        ", quantitat" + this.getQuantity() + 
+        ", referencia" + this.getReference() + 
+        ", preuindividual" + this.getIndividualPrice() +
+        ", descompte" + this.getDiscount() + 
+        ", total" + this.getTotal();
     }
 }

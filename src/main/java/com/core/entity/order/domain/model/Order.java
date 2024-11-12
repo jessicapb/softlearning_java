@@ -8,6 +8,7 @@ import java.util.Set;
 
 import com.core.checks.Check;
 import com.core.entity.exceptions.BuildException;
+import com.core.entity.exceptions.ServiceException;
 import com.core.entity.shared.operations.Operation;
 import com.core.entity.shared.physicals.PhysicalData;
 import com.core.entity.shared.products.Storable;
@@ -33,16 +34,10 @@ public class Order extends Operation implements Storable{
         this.status = OrderStatus.CREATED;
     }
 
-    public static Order getInstanceOrder(int reference, String description, String initDate, String finishDate, String address, String phoneContact, String idClient, String name, String surname, String DNI) throws BuildException {
+    public static Order getInstanceOrder(String address, String phoneContact, String idClient, String name, String surname, String DNI) throws BuildException {
         String message ="";
         int error = 0;
         Order o = new Order();
-
-        try{
-            o.checkOperation(reference, description, initDate, finishDate);
-        }catch(BuildException e){
-            message += e.getMessage();
-        }
 
         if((error = o.setAddress(address)) !=0){
             message += Check.getErrorMessage(error);
@@ -76,13 +71,10 @@ public class Order extends Operation implements Storable{
     }
 
     public String getAddress() {
-        return address;
+        return this.address;
     }
 
     public int setAddress(String address) {
-        if(Check.isNull(address) ==true){
-            return -1;
-        }
         if(Check.minLenght(address, 6) !=0){
             return -2;
         }
@@ -90,8 +82,8 @@ public class Order extends Operation implements Storable{
         return 0;
     }
 
-    public Set<String> getPhoneContact() {
-        return phoneContact;
+    public String getPhoneContact() {
+        return this.phoneContact.toString();//join contenar o unir
     }
 
     public int setPhoneContact(String phoneContact) {
@@ -104,9 +96,6 @@ public class Order extends Operation implements Storable{
     }
 
     public int setIdClient(String idClient) {
-        if(Check.isNull(idClient) ==true){
-            return -1;
-        }
         if(Check.minLenght(idClient, 6) !=0){
             return -2;
         }
@@ -115,13 +104,10 @@ public class Order extends Operation implements Storable{
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public int setName(String name) {
-        if(Check.isNull(name) ==true){
-            return -1;
-        }
         if(Check.minLenght(name, 2) !=0){
             return -2;
         }
@@ -130,13 +116,10 @@ public class Order extends Operation implements Storable{
     }
 
     public String getSurname() {
-        return surname;
+        return this.surname;
     }
 
     public int setSurname(String surname) {
-        if(Check.isNull(surname) ==true){
-            return -1;
-        }
         if(Check.minLenght(surname, 4) !=0){
             return -2;
         }
@@ -145,13 +128,10 @@ public class Order extends Operation implements Storable{
     }
 
     public String getDNI() {
-        return DNI;
+        return this.DNI;
     }
 
     public int setDNI(String DNI) {
-        if(Check.isNull(DNI) ==true){
-            return -1;
-        }
         if(Check.minLenght(DNI, 9) !=0){
             return -2;
         }
@@ -164,10 +144,8 @@ public class Order extends Operation implements Storable{
     }
 
     public int setPaymentDate(String paymentDate) {
-        if(Check.isNull(paymentDate) == true){
-            return -1;
-        }
         this.paymentDate = LocalDateTime.parse(paymentDate, formatter);
+        this.status = OrderStatus.CONFIRMED;
         return 0;
     }
 
@@ -176,10 +154,8 @@ public class Order extends Operation implements Storable{
     }
 
     public int setDeliveryDate(String deliveryDate) {
-        if(Check.isNull(deliveryDate) == true){
-            return -1;
-        }
         this.deliveryDate = LocalDateTime.parse(deliveryDate, formatter);
+        this.status = OrderStatus.DELIVERED;
         return 0;
     }
 
@@ -216,7 +192,6 @@ public class Order extends Operation implements Storable{
     public void setPackagedDimensions(String physics)throws BuildException{
 
         String[] parts = physics.split(",");
-
         double high = 0;
         double width = 0;
         double depth = 0;
@@ -255,6 +230,7 @@ public class Order extends Operation implements Storable{
             }
         }
         this.orderPackage = PhysicalData.getInstancePhysical(high, width, length, weight, fragil, depth);
+        this.status = OrderStatus.FORTHCOMMING;
     }
 
     public String getPackedDimensions(){
@@ -265,75 +241,248 @@ public class Order extends Operation implements Storable{
         ", f: " + this.orderPackage.getFragil()+
         ", d: " + this.orderPackage.getDepth();       
     }
+    
+    public static Order getInstanceOrder(int reference, String description, String initDate, String finishDate, String address, String phoneContact, 
+        String idClient, String name, String surname, String DNI, String paymentDate, String deliveryDate, double high, double width, 
+        double depth, double weight, boolean fragil, double length) throws BuildException{
+
+        String message ="";
+        int error = 0;
+        Order or = new Order();
+
+        try{
+            or.checkOperation(reference, description, initDate, finishDate);
+        }catch(BuildException e){
+            message += e.getMessage();
+        }
+
+        try{
+            or.orderPackage= PhysicalData.getInstancePhysical(high, width, length, weight, fragil, depth);
+        }catch(BuildException e){
+            message += e.getMessage();
+        }
+
+        if((error = or.setAddress(address)) !=0){
+            message += Check.getErrorMessage(error);
+        }
+
+        if((error = or.setPhoneContact(null)) !=0){
+            message += Check.getErrorMessage(error);
+        }
+        
+        if((error = or.setIdClient(idClient)) !=0){
+            message += Check.getErrorMessage(error);
+        }
+        
+        if((error = or.setName(name)) !=0){
+            message += Check.getErrorMessage(error);
+        }
+        
+        if((error = or.setSurname(surname)) !=0){
+            message += Check.getErrorMessage(error);
+        }
+        
+        if((error = or.setDNI(DNI)) !=0){
+            message += Check.getErrorMessage(error);
+        }
+        
+        if(paymentDate != null){
+            if((error = or.setPaymentDate(paymentDate))!=0){
+                message += Check.getErrorMessage(error);
+            }
+        }
+
+        if(deliveryDate !=null){
+            if((error = or.setDeliveryDate(deliveryDate)) !=0){
+                message += Check.getErrorMessage(error);
+            }
+        }
+
+        if(message.length()>0){
+            or = null;
+            throw new BuildException(message);
+        }
+        return or;
+    }
 
     //ArrayList
     public int getNumDetails(){
-        int total = this.shopCart.size();
-        for (int i = 0; i < total; i++) {
-            System.out.println(this.shopCart.get(i -1));
-        }
-        return total;
+        return this.shopCart.size();
     }
 
-    public int setDetail(String namearticles, int quantity, int referencenum, double individualPrice, int discount, double total){
+    public int setDetail(String namearticles, int quantity, String referencenum, double individualPrice, int discount, double total){
         try {
             OrderDetail d = OrderDetail.getInstanceDetail(namearticles, quantity, referencenum, individualPrice, discount, total);
             this.shopCart.add(d);
-            System.out.println("Articles afegits correctament.");
-            return 1; 
+            return 0;
         } catch (BuildException e) {
             System.out.println(e.toString());
             return 0; 
         }
     }
 
-    public String getDetail(int pos){
-        if (pos < 0 || pos > this.shopCart.size()) {
-            return "Posició incorrecta"; 
+    public String getDetail(int pos)throws ServiceException{
+        if(this.status.equals(OrderStatus.CREATED)){
+            if (pos < 0 || pos > this.shopCart.size()) {
+                return "Posició incorrecta"; 
+            }
+            
+            OrderDetail d = this.shopCart.get(pos); 
+            return d.getDetails();
         }
-        
-        OrderDetail d = this.shopCart.get(pos); 
-        return d.toString();
+        throw new ServiceException("Sembla que no hi ha ningún Order Detail creat");
     }
 
-    public String getDetail(String ref){
-        return "";
+    public String getDetail(String ref)throws ServiceException{
+        if(this.status.equals(OrderStatus.CREATED)){
+            String product ="";
+            for(int i = 0; i < this.shopCart.size();i++){
+                if(this.shopCart.get(i).getReference().equals(ref) == true){
+                    product = this.shopCart.get(i).getDetails();
+                }
+            }
+            return product;
+        }
+        throw new ServiceException("Sembla que no hi ha ningún Order Detail creat");
     }
 
     public int updateDetail(int pos, int amount){
-        return 0;
+        if(this.status.equals(OrderStatus.CREATED)){
+            if (pos < 0 || pos > this.shopCart.size()) {
+                return -1;
+            } else {
+                this.shopCart.get(pos).setQuantity(amount);
+            }
+            return 0;
+        }
+        return -1;
     }
 
     public int updateDetail(String ref, int amount){
-        
-        return 0;
+        if(this.status.equals(OrderStatus.CREATED)){
+            for (int i = 0; i < this.shopCart.size(); i++) {
+                if (this.shopCart.get(i).getReference().equals(ref)) {
+                    this.shopCart.get(i).setQuantity(i); 
+                    return 0;
+                }
+            }
+            return -2;
+        }
+        return -1;
     }
 
     public int deleteDetail(int pos){
-        return 0;
+        if(this.status.equals(OrderStatus.CREATED)){
+            if (pos < 0 || pos > this.shopCart.size()) {
+                return -2;
+            } else {
+                this.shopCart.remove(pos);
+            }
+        }
+        return -1;
     }
 
     public int deleteDetail(String ref){
-        return 0;
+        if(this.status.equals(OrderStatus.CREATED)){
+            for (int i = 0; i < this.shopCart.size(); i++) {
+                if (this.shopCart.get(i).getReference().equals(ref)) {
+                    this.shopCart.remove(i);
+                    return 0;
+                }
+            }
+        }
+        return -1;
     }
 
     public double getPrice(){
-        return 0;
+        double total = 0;
+        if (this.shopCart != null) {
+            for (int i = 0; i < this.shopCart.size(); i++) {
+                total += this.shopCart.get(i).getTotal();
+            }
+        }
+        return total;
+    }
+
+    public int shopcartcancelled(){
+        if(this.status.equals(OrderStatus.CREATED)){
+            if(this.shopCart.size() > 0){
+                for(int i = 0; i < this.shopCart.size(); i++){
+                    this.shopCart.remove(i);
+                    this.status = OrderStatus.CANCELLED;
+                }
+                return 0;
+            }else{
+                return -2;
+            }
+        }
+        return -1;
+    }
+
+    public void setShopCartDetails(String shopCart) throws BuildException{
+        String namearticles = "";
+        int quantity = 0;
+        String referencenum = "";
+        int individualPrice = 0;
+        int discount = 0;
+        double total = 0;
+        
+        String[] rows = shopCart.split(";");
+        
+        for (String row : rows) { 
+            
+            String[] columns = row.split(",");
+
+            for (String column : columns) {
+
+                String[] keyvalue = column.split(":");
+                
+                switch (keyvalue[0]) {
+                    case "nomarticle":
+                        namearticles =  keyvalue[1];
+                        break;
+                    case "quantitat":
+                        quantity = Integer.parseInt(keyvalue[1]);
+                        break;
+                    case "referencia":
+                        referencenum = keyvalue[1];
+                        break;
+                    case "preuindividual":
+                        individualPrice = Integer.parseInt(keyvalue[1]);
+                        break;
+                    case "descompte":
+                    discount = Integer.parseInt(keyvalue[1]);
+                    break;
+                    case "total":
+                        total = Double.parseDouble(keyvalue[1]);
+                        break;
+
+                    default:
+                }
+            }
+        }
+        OrderDetail orderDetail = OrderDetail.getInstanceDetail(namearticles, quantity, referencenum, individualPrice, discount, total);
+        this.shopCart.add(orderDetail);
     }
 
     public String getShopCartDetails(){
-        return "";
+        String details = "";
+        for(int i = 0; i <this.shopCart.size();i++){
+            details += 
+            "Nom article: " + this.shopCart.get(i).getNamearticles() + 
+            "Quantitat: " + this.shopCart.get(i).getQuantity() + 
+            "Referencia: " + this.shopCart.get(i).getReference() + 
+            "Preu individual: " + this.shopCart.get(i).getIndividualPrice() + 
+            "Descompte: " + this.shopCart.get(i).getDiscount() + 
+            "Total: " + this.shopCart.get(i).getTotal();
+        }
+        return details.toString();
     }
 
-    public String setShopCartDetails(String shopCart){
-        return "";
-    }
-
-    @Override
     public String getDetails() {
         return "Factura Número d'operació: " + reference + ", Descripció: " + description + ", Data d'inici: " + getInitDate()
                 + ", Data final: " + getFinishDate() + ", Adreça: " + address + ", Número de contacte: " + phoneContact
                 + ", Número de soci: " + idClient + ", Nom del client: " + name + ", Cognoms: " + surname + ", DNI: " + DNI
-                + ", Dia de pagament: " + getPaymentDate() + "";
+                + "";
     }
 }
