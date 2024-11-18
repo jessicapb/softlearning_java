@@ -49,7 +49,7 @@ public abstract class Product implements Marketable{
     }
 
     public int setprice(double price) {
-        if(Check.isNegativef(price) !=0){
+        if(Check.isNegatived(price) !=0){
             return -3;
         }
         this.price = price;

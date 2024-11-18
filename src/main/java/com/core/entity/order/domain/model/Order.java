@@ -43,7 +43,7 @@ public class Order extends Operation implements Storable{
             message += Check.getErrorMessage(error);
         }
 
-        if((error = o.setPhoneContact(null)) !=0){
+        if((error = o.setPhoneContact(phoneContact)) !=0){
             message += Check.getErrorMessage(error);
         }
         
@@ -69,7 +69,6 @@ public class Order extends Operation implements Storable{
         }
         return o;
     }
-
     public String getAddress() {
         return this.address;
     }
@@ -87,6 +86,9 @@ public class Order extends Operation implements Storable{
     }
 
     public int setPhoneContact(String phoneContact) {
+        if(Check.minLenght(phoneContact, 9) !=0){
+            return -2;
+        }
         this.phoneContact.add(phoneContact);
         return 0;
     }
@@ -140,7 +142,10 @@ public class Order extends Operation implements Storable{
     }
 
     public String getPaymentDate() {
-        return this.paymentDate.format(formatter);
+        if(this.paymentDate !=null){
+            return this.paymentDate.format(formatter);
+        }
+        return "";
     }
 
     public int setPaymentDate(String paymentDate) {
@@ -150,7 +155,10 @@ public class Order extends Operation implements Storable{
     }
 
     public String getDeliveryDate() {
-        return this.deliveryDate.format(formatter);
+        if(this.deliveryDate !=null){
+            return this.deliveryDate.format(formatter);
+        }
+        return "";
     }
 
     public int setDeliveryDate(String deliveryDate) {
@@ -179,7 +187,6 @@ public class Order extends Operation implements Storable{
     public double getWidth(){
         return this.orderPackage.getWidth();
     }
-
 
     public boolean getFragil() {
         return this.orderPackage.getFragil();
@@ -266,7 +273,7 @@ public class Order extends Operation implements Storable{
             message += Check.getErrorMessage(error);
         }
 
-        if((error = or.setPhoneContact(null)) !=0){
+        if((error = or.setPhoneContact(phoneContact)) !=0){
             message += Check.getErrorMessage(error);
         }
         
@@ -291,7 +298,7 @@ public class Order extends Operation implements Storable{
                 message += Check.getErrorMessage(error);
             }
         }
-
+        
         if(deliveryDate !=null){
             if((error = or.setDeliveryDate(deliveryDate)) !=0){
                 message += Check.getErrorMessage(error);
@@ -303,6 +310,35 @@ public class Order extends Operation implements Storable{
             throw new BuildException(message);
         }
         return or;
+    }
+
+    //Dades del pare
+    public String getInitDate() {
+        if(this.initDate != null){
+            return this.initDate.format(formatter);
+        }
+        return "";
+    }
+
+    public int setInitDate(String initDate) {
+        this.initDate = LocalDateTime.parse(initDate,formatter);
+        this.status = OrderStatus.CREATED;
+        return 0;
+    }
+
+    public String getFinishDate() {
+        if(this.finishDate != null){
+            return this.finishDate.format(formatter);
+        }
+        return "";
+    }
+
+    public int setFinishDate(String finishDate) {
+        if(this.status == OrderStatus.DELIVERED){
+            this.finishDate = LocalDateTime.parse(finishDate,formatter);
+            this.status = OrderStatus.FINISHED;
+        }
+        return 0;
     }
 
     //ArrayList
@@ -322,7 +358,7 @@ public class Order extends Operation implements Storable{
     }
 
     public String getDetail(int pos)throws ServiceException{
-        if(this.status.equals(OrderStatus.CREATED)){
+        if(this.status == OrderStatus.CREATED){
             if (pos < 0 || pos > this.shopCart.size()) {
                 return "Posició incorrecta"; 
             }
@@ -334,7 +370,7 @@ public class Order extends Operation implements Storable{
     }
 
     public String getDetail(String ref)throws ServiceException{
-        if(this.status.equals(OrderStatus.CREATED)){
+        if(this.status == OrderStatus.CREATED){
             String product ="";
             for(int i = 0; i < this.shopCart.size();i++){
                 if(this.shopCart.get(i).getReference().equals(ref) == true){
@@ -347,8 +383,8 @@ public class Order extends Operation implements Storable{
     }
 
     public int updateDetail(int pos, int amount){
-        if(this.status.equals(OrderStatus.CREATED)){
-            if (pos < 0 || pos > this.shopCart.size()) {
+        if(this.status == OrderStatus.CREATED){
+            if (pos < 0 || pos >= this.shopCart.size()) {
                 return -1;
             } else {
                 this.shopCart.get(pos).setQuantity(amount);
@@ -359,10 +395,11 @@ public class Order extends Operation implements Storable{
     }
 
     public int updateDetail(String ref, int amount){
-        if(this.status.equals(OrderStatus.CREATED)){
+        if(this.status == OrderStatus.CREATED){
             for (int i = 0; i < this.shopCart.size(); i++) {
                 if (this.shopCart.get(i).getReference().equals(ref)) {
-                    this.shopCart.get(i).setQuantity(i); 
+                    
+                    this.shopCart.get(i).setQuantity(amount); 
                     return 0;
                 }
             }
@@ -372,7 +409,7 @@ public class Order extends Operation implements Storable{
     }
 
     public int deleteDetail(int pos){
-        if(this.status.equals(OrderStatus.CREATED)){
+        if(this.status == OrderStatus.CREATED){
             if (pos < 0 || pos > this.shopCart.size()) {
                 return -2;
             } else {
@@ -383,7 +420,7 @@ public class Order extends Operation implements Storable{
     }
 
     public int deleteDetail(String ref){
-        if(this.status.equals(OrderStatus.CREATED)){
+        if(this.status == OrderStatus.CREATED){
             for (int i = 0; i < this.shopCart.size(); i++) {
                 if (this.shopCart.get(i).getReference().equals(ref)) {
                     this.shopCart.remove(i);
@@ -404,8 +441,12 @@ public class Order extends Operation implements Storable{
         return total;
     }
 
+    public String getStatus(){
+        return status.name();
+    }
+    
     public int shopcartcancelled(){
-        if(this.status.equals(OrderStatus.CREATED)){
+        if(this.status == OrderStatus.CREATED){
             if(this.shopCart.size() > 0){
                 for(int i = 0; i < this.shopCart.size(); i++){
                     this.shopCart.remove(i);
@@ -423,7 +464,7 @@ public class Order extends Operation implements Storable{
         String namearticles = "";
         int quantity = 0;
         String referencenum = "";
-        int individualPrice = 0;
+        double individualPrice = 0;
         int discount = 0;
         double total = 0;
         
@@ -443,20 +484,21 @@ public class Order extends Operation implements Storable{
                         break;
                     case "quantitat":
                         quantity = Integer.parseInt(keyvalue[1]);
+                        
                         break;
                     case "referencia":
                         referencenum = keyvalue[1];
                         break;
                     case "preuindividual":
-                        individualPrice = Integer.parseInt(keyvalue[1]);
+                        individualPrice = Double.parseDouble(keyvalue[1]);
                         break;
                     case "descompte":
-                    discount = Integer.parseInt(keyvalue[1]);
-                    break;
+                        discount = Integer.parseInt(keyvalue[1]);
+                        break;
                     case "total":
                         total = Double.parseDouble(keyvalue[1]);
+                        System.out.println(total);
                         break;
-
                     default:
                 }
             }
@@ -469,20 +511,20 @@ public class Order extends Operation implements Storable{
         String details = "";
         for(int i = 0; i <this.shopCart.size();i++){
             details += 
-            "Nom article: " + this.shopCart.get(i).getNamearticles() + 
-            "Quantitat: " + this.shopCart.get(i).getQuantity() + 
-            "Referencia: " + this.shopCart.get(i).getReference() + 
-            "Preu individual: " + this.shopCart.get(i).getIndividualPrice() + 
-            "Descompte: " + this.shopCart.get(i).getDiscount() + 
-            "Total: " + this.shopCart.get(i).getTotal();
+            "Nom article: " + this.shopCart.get(i).getNamearticles() + "," + 
+            "Quantitat: " + this.shopCart.get(i).getQuantity() + ","+ 
+            "Referencia: " + this.shopCart.get(i).getReference() + "," + 
+            "Preu individual: " + this.shopCart.get(i).getIndividualPrice() + "," + 
+            "Descompte: " + this.shopCart.get(i).getDiscount() + "," + 
+            "Total: " + this.shopCart.get(i).getTotal() + "," ;
         }
         return details.toString();
     }
 
     public String getDetails() {
-        return "Factura Número d'operació: " + reference + ", Descripció: " + description + ", Data d'inici: " + getInitDate()
-                + ", Data final: " + getFinishDate() + ", Adreça: " + address + ", Número de contacte: " + phoneContact
+        return "Factura Número d'operació: " + reference + ", Descripció: " + description + ", Data d'inici: " + this.getInitDate()
+                + ", Data final: " + this.getFinishDate() + ", Adreça: " + address + ", Número de contacte: " + phoneContact
                 + ", Número de soci: " + idClient + ", Nom del client: " + name + ", Cognoms: " + surname + ", DNI: " + DNI
-                + "";
+                + ", Dia de pagament: " + this.getPaymentDate() + ", Dia d'entrega: " + this.getDeliveryDate();
     }
 }

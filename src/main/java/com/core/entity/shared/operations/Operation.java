@@ -24,12 +24,17 @@ public abstract class Operation {
 
         this.description = description;
 
-        if((error = setInitDate(initDate)) !=0){
-            message +=  Check.getErrorMessage(error);
+        if(initDate !=null){
+            if((error = setInitDate(initDate)) !=0){
+                message +=  Check.getErrorMessage(error);
+            }
         }
 
-        if((error = setFinishDate(finishDate)) !=0){
-            message +=  Check.getErrorMessage(error);
+        if(finishDate !=null){
+            if((error = setFinishDate(finishDate)) !=0){
+                message +=  Check.getErrorMessage(error);
+            }
+    
         }
 
         if(message.length()>0){
@@ -62,7 +67,10 @@ public abstract class Operation {
     }
 
     public String getInitDate() {
-        return this.initDate.format(formatter);
+        if(this.initDate != null){
+            return this.initDate.format(formatter);
+        }
+        return "";
     }
 
     public int setInitDate(String initDate) {
@@ -74,7 +82,10 @@ public abstract class Operation {
     }
 
     public String getFinishDate() {
-        return this.finishDate.format(formatter);
+        if(this.finishDate != null){
+            return this.finishDate.format(formatter);
+        }
+        return "";
     }
 
     public int setFinishDate(String finishDate) {

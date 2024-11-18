@@ -23,15 +23,15 @@ public class Check {
     //Negatiu set
     public static int isNegative (int n){
         if(n <= 0){
-            return -1;
+            return -3;
         }else{
             return 0;
         }
     }
 
-    public static int isNegativef(double s){
+    public static double isNegatived (double s){
         if(s <= 0){
-            return -1;
+            return -3;
         }else{
             return 0;
         }

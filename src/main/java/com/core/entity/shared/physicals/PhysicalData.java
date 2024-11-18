@@ -57,7 +57,7 @@ public class PhysicalData {
     }
 
     public int setHigh(double high) {
-        if(Check.isNegativef(high) !=0){
+        if(Check.isNegatived(high) !=0){
             return -3;
         }
         this.high = high;
@@ -69,7 +69,7 @@ public class PhysicalData {
     }
 
     public int setWidth(double width) {
-        if(Check.isNegativef(width) !=0){
+        if(Check.isNegatived(width) !=0){
             return -3;
         }
         this.width = width;
@@ -81,7 +81,7 @@ public class PhysicalData {
     }
 
     public int setLength(double length) {
-        if(Check.isNegativef(length) !=0){
+        if(Check.isNegatived(length) !=0){
             return -3;
         }
         this.length = length;
@@ -93,7 +93,7 @@ public class PhysicalData {
     }
 
     public int setWeight(double weight) {
-        if(Check.isNegativef(weight) !=0){
+        if(Check.isNegatived(weight) !=0){
             return -3;
         }
         this.weight = weight;
@@ -124,7 +124,7 @@ public class PhysicalData {
     }
 
     public int setDepth(double depth) {
-        if(Check.isNegativef(depth) !=0){
+        if(Check.isNegatived(depth) !=0){
             return -3;
         }
         this.depth = depth;

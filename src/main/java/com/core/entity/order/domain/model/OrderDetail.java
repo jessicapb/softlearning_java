@@ -21,6 +21,7 @@ public class OrderDetail {
 
         if((error = d.setNamearticles(namearticles)) !=0){
             message += Check.getErrorMessage(error);
+            
         }
         
         if((error = d.setQuantity(quantity)) !=0){
@@ -74,6 +75,7 @@ public class OrderDetail {
             return -3;
         }
         this.quantity = quantity;
+        this.total = this.individualPrice * this.quantity;
         return 0;
     }
 
@@ -94,7 +96,7 @@ public class OrderDetail {
     }
 
     public int setIndividualPrice(double individualPrice) {
-        if(Check.isNegativef(individualPrice) !=0){
+        if(Check.isNegatived(individualPrice) !=0){
             return -3;
         }
         this.individualPrice = individualPrice;
@@ -118,9 +120,6 @@ public class OrderDetail {
     }
 
     public int setTotal(double total) {
-        if(Check.isNegativef(total) !=0){
-            return -3;
-        }
         this.total = total;
         return 0;
     }
