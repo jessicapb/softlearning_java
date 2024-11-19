@@ -2,6 +2,7 @@ package com.core.entity.order.domain.model;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -197,7 +198,6 @@ public class Order extends Operation implements Storable{
     }
 
     public void setPackagedDimensions(String physics)throws BuildException{
-
         String[] parts = physics.split(",");
         double high = 0;
         double width = 0;
@@ -249,10 +249,9 @@ public class Order extends Operation implements Storable{
         ", d: " + this.orderPackage.getDepth();       
     }
     
-    public static Order getInstanceOrder(int reference, String description, String initDate, String finishDate, String address, String phoneContact, 
-        String idClient, String name, String surname, String DNI, String paymentDate, String deliveryDate, double high, double width, 
+    public static Order getInstanceOrder(int reference, String description, String initDate, String address, String phoneContact, 
+        String idClient, String name, String surname, String DNI, String paymentDate, String deliveryDate,  String finishDate, double high, double width, 
         double depth, double weight, boolean fragil, double length) throws BuildException{
-
         String message ="";
         int error = 0;
         Order or = new Order();
@@ -283,6 +282,7 @@ public class Order extends Operation implements Storable{
         
         if((error = or.setName(name)) !=0){
             message += Check.getErrorMessage(error);
+            
         }
         
         if((error = or.setSurname(surname)) !=0){
@@ -328,16 +328,16 @@ public class Order extends Operation implements Storable{
 
     public String getFinishDate() {
         if(this.finishDate != null){
-            return this.finishDate.format(formatter);
+            if(this.status == OrderStatus.DELIVERED){
+                return this.finishDate.format(formatter);
+            }
         }
         return "";
     }
 
     public int setFinishDate(String finishDate) {
-        if(this.status == OrderStatus.DELIVERED){
-            this.finishDate = LocalDateTime.parse(finishDate,formatter);
-            this.status = OrderStatus.FINISHED;
-        }
+        this.finishDate = LocalDateTime.parse(finishDate, formatter);
+        this.status = OrderStatus.FINISHED;
         return 0;
     }
 
@@ -382,44 +382,47 @@ public class Order extends Operation implements Storable{
         throw new ServiceException("Sembla que no hi ha ningún Order Detail creat");
     }
 
-    public int updateDetail(int pos, int amount){
+    public int updateDetail(int pos, int amount)throws ServiceException{
         if(this.status == OrderStatus.CREATED){
             if (pos < 0 || pos >= this.shopCart.size()) {
-                return -1;
+                throw new ServiceException("No existeix el producte");
             } else {
                 this.shopCart.get(pos).setQuantity(amount);
             }
             return 0;
+        }else{
+            throw new ServiceException("No es pot eliminar perquè està pagat.");
         }
-        return -1;
     }
 
-    public int updateDetail(String ref, int amount){
+    public int updateDetail(String ref, int amount)throws ServiceException{
         if(this.status == OrderStatus.CREATED){
             for (int i = 0; i < this.shopCart.size(); i++) {
                 if (this.shopCart.get(i).getReference().equals(ref)) {
-                    
                     this.shopCart.get(i).setQuantity(amount); 
                     return 0;
                 }
             }
-            return -2;
+            throw new ServiceException("No existeix el producte");
+        }else{
+            throw new ServiceException("No es pot eliminar perquè està pagat.");
         }
-        return -1;
     }
 
-    public int deleteDetail(int pos){
+    public int deleteDetail(int pos)throws ServiceException{
         if(this.status == OrderStatus.CREATED){
             if (pos < 0 || pos > this.shopCart.size()) {
-                return -2;
+                throw new ServiceException("No existeix el producte");
             } else {
                 this.shopCart.remove(pos);
             }
+        }else{
+            throw new ServiceException("No es pot eliminar perquè està pagat.");
         }
         return -1;
     }
 
-    public int deleteDetail(String ref){
+    public int deleteDetail(String ref)throws ServiceException{
         if(this.status == OrderStatus.CREATED){
             for (int i = 0; i < this.shopCart.size(); i++) {
                 if (this.shopCart.get(i).getReference().equals(ref)) {
@@ -427,8 +430,10 @@ public class Order extends Operation implements Storable{
                     return 0;
                 }
             }
+            throw new ServiceException("No existeix el producte.");
+        }else{
+            throw new ServiceException("No es pot eliminar perquè està pagat.");
         }
-        return -1;
     }
 
     public double getPrice(){
@@ -471,11 +476,8 @@ public class Order extends Operation implements Storable{
         String[] rows = shopCart.split(";");
         
         for (String row : rows) { 
-            
             String[] columns = row.split(",");
-
             for (String column : columns) {
-
                 String[] keyvalue = column.split(":");
                 
                 switch (keyvalue[0]) {
@@ -516,15 +518,24 @@ public class Order extends Operation implements Storable{
             "Referencia: " + this.shopCart.get(i).getReference() + "," + 
             "Preu individual: " + this.shopCart.get(i).getIndividualPrice() + "," + 
             "Descompte: " + this.shopCart.get(i).getDiscount() + "," + 
-            "Total: " + this.shopCart.get(i).getTotal() + "," ;
+            "Total: " + this.shopCart.get(i).getTotal() + ";";
         }
-        return details.toString();
+        return details;
     }
 
     public String getDetails() {
-        return "Factura Número d'operació: " + reference + ", Descripció: " + description + ", Data d'inici: " + this.getInitDate()
-                + ", Data final: " + this.getFinishDate() + ", Adreça: " + address + ", Número de contacte: " + phoneContact
-                + ", Número de soci: " + idClient + ", Nom del client: " + name + ", Cognoms: " + surname + ", DNI: " + DNI
-                + ", Dia de pagament: " + this.getPaymentDate() + ", Dia d'entrega: " + this.getDeliveryDate();
+        return "Factura Número d'operació: " + reference 
+                + ", Descripció: " + description 
+                + ", Data d'inici: " + this.getInitDate()
+                + ", Adreça: " + address 
+                + ", Número de contacte: " + phoneContact
+                + ", Número de soci: " + idClient 
+                + ", Nom del client: " + name 
+                + ", Cognoms: " + surname 
+                + ", DNI: " + DNI
+                + ", Dia de pagament: " + this.getPaymentDate() 
+                + ", Dia d'entrega: " + this.getDeliveryDate()
+                + ", Data final: " + getFinishDate() 
+                + ", Estat de la compra: " + this.getStatus() ;
     }
 }

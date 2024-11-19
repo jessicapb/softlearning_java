@@ -34,7 +34,6 @@ public abstract class Operation {
             if((error = setFinishDate(finishDate)) !=0){
                 message +=  Check.getErrorMessage(error);
             }
-    
         }
 
         if(message.length()>0){
@@ -74,26 +73,22 @@ public abstract class Operation {
     }
 
     public int setInitDate(String initDate) {
-        if(Check.isNull(initDate) == true){
-            return -1;
-        }
         this.initDate = LocalDateTime.parse(initDate,formatter);
         return 0;
     }
 
-    public String getFinishDate() {
-        if(this.finishDate != null){
+
+    public String  getFinishDate() {
+        if(this.finishDate !=null){
             return this.finishDate.format(formatter);
         }
         return "";
     }
 
-    public int setFinishDate(String finishDate) {
-        if(Check.isNull(finishDate) == true){
-            return -1;
-        }
-        this.finishDate = LocalDateTime.parse(finishDate,formatter);
+    public int setFinishDate(String  finishDate) {
+        this.finishDate = LocalDateTime.parse(finishDate);
         return 0;
     }
+
     public abstract String getDetails();
 }

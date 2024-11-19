@@ -6,13 +6,12 @@ public class OrderDTO {
     private final double high, width, depth, weight, length;
     private final boolean fragil;
 
-    public OrderDTO(int reference, String description, String initDate, String finishDate, String address, String phoneContact, 
-    String idClient, String name, String surname, String DNI, String paymentDate, String deliveryDate, double high, double width, 
+    public OrderDTO(int reference, String description, String initDate, String address, String phoneContact, 
+    String idClient, String name, String surname, String DNI, String paymentDate, String deliveryDate, String finishDate, double high, double width, 
     double depth, double weight, boolean fragil, double length){
         this.reference = reference;
         this.description = description;
         this.initDate = initDate;
-        this.finishDate = finishDate;
         this.address = address;
         this.phoneContact = phoneContact; 
         this.idClient = idClient;
@@ -21,6 +20,7 @@ public class OrderDTO {
         this.DNI = DNI;
         this.paymentDate = paymentDate;
         this.deliveryDate = deliveryDate;
+        this.finishDate = finishDate;
         this.high = high;
         this.width = width;
         this.depth = depth;
@@ -39,10 +39,6 @@ public class OrderDTO {
 
     public String getInitDate() {
         return initDate;
-    }
-
-    public String getFinishDate() {
-        return finishDate;
     }
 
     public String getAddress() {
@@ -75,6 +71,10 @@ public class OrderDTO {
 
     public String getDeliveryDate() {
         return deliveryDate;
+    }
+
+    public String getFinishDate() {
+        return finishDate;
     }
 
     public double getHigh() {
