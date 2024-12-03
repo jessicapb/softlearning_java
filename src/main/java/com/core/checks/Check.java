@@ -9,11 +9,11 @@ public class Check {
     }
 
     //Longitud del set
-    public static int minLenght(String s, int length){
-        if(Check.isNull(s)){
+    public static int minLenght(String cadena, int longitud){
+        if(cadena.trim().length() < longitud){
             return -1;
         }
-        return s.trim().length() >= length ? 0 : -3;
+        return 0;
     }
 
     // public static int minLenghtSet(Set <String> set, int length){

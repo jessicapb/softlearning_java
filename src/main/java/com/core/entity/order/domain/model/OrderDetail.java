@@ -56,10 +56,7 @@ public class OrderDetail {
     }
 
     public int setNamearticles(String namearticles) {
-        if(Check.isNull(namearticles) == true){
-            return -1;
-        }
-        if(Check.minLenght(namearticles, 6) !=0){
+        if((Check.minLenght(namearticles, 2)) !=0){
             return -2;
         }
         this.namearticles = namearticles;
@@ -71,9 +68,6 @@ public class OrderDetail {
     }
 
     public int setQuantity(int quantity) {
-        if(Check.isNegative(quantity) !=0){
-            return -3;
-        }
         this.quantity = quantity;
         this.total = this.individualPrice * this.quantity;
         return 0;
@@ -84,7 +78,7 @@ public class OrderDetail {
     }
 
     public int setReference(String referencenum) {
-        if(Check.minLenght(referencenum, 4) !=0){
+        if((Check.minLenght(referencenum, 2))!=0){
             return -2;
         }
         this.referencenum = referencenum;
@@ -96,9 +90,6 @@ public class OrderDetail {
     }
 
     public int setIndividualPrice(double individualPrice) {
-        if(Check.isNegatived(individualPrice) !=0){
-            return -3;
-        }
         this.individualPrice = individualPrice;
         return 0;
     }
@@ -108,9 +99,6 @@ public class OrderDetail {
     }
 
     public int setDiscount(int discount) {
-        if(Check.isNegative(discount) !=0){
-            return -3;
-        }
         this.discount = discount;
         return 0;
     }

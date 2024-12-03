@@ -1,14 +1,14 @@
 package com.core.entity.order.services;
 
 public class OrderDTO {
-    private final String description, initDate, finishDate, address, phoneContact, idClient, name, surname, DNI, paymentDate, deliveryDate;
-    private final int reference; 
-    private final double high, width, depth, weight, length;
-    private final boolean fragil;
+    private String description, initDate, finishDate, address, phoneContact, idClient, name, surname, DNI, paymentDate, deliveryDate, shopCart;
+    private int reference; 
+    private double high, width, depth, weight, length;
+    private boolean fragil;
 
     public OrderDTO(int reference, String description, String initDate, String address, String phoneContact, 
     String idClient, String name, String surname, String DNI, String paymentDate, String deliveryDate, String finishDate, double high, double width, 
-    double depth, double weight, boolean fragil, double length){
+    double depth, double weight, boolean fragil, double length, String shopCart){
         this.reference = reference;
         this.description = description;
         this.initDate = initDate;
@@ -27,6 +27,7 @@ public class OrderDTO {
         this.weight = weight;
         this.fragil = fragil;
         this.length = length;
+        this.shopCart = shopCart;
     }
 
     public int getReference() {
@@ -99,5 +100,9 @@ public class OrderDTO {
 
     public double getLength() {
         return length;
+    }
+
+    public String getShopCartDetails(){
+        return shopCart;
     }
 }

@@ -2,7 +2,6 @@ package com.core.entity.order.domain.model;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -35,6 +34,7 @@ public class Order extends Operation implements Storable{
         this.status = OrderStatus.CREATED;
     }
 
+    //getInstance petit
     public static Order getInstanceOrder(String address, String phoneContact, String idClient, String name, String surname, String DNI) throws BuildException {
         String message ="";
         int error = 0;
@@ -70,6 +70,110 @@ public class Order extends Operation implements Storable{
         }
         return o;
     }
+
+    //getInstance gran
+    public static Order getInstanceOrder(int reference, String description, String initDate, String address, String phoneContact, 
+        String idClient, String name, String surname, String DNI, String paymentDate, String deliveryDate,  String finishDate, double high, double width, 
+        double depth, double weight, boolean fragil, double length, String shopCart) throws BuildException{
+        String message ="";
+        int error = 0;
+        Order or = new Order();
+
+        try{
+            or.checkOperation(reference, description, initDate, null);
+        }catch(BuildException e){
+            message += e.getMessage();
+        }
+
+        try{
+            or.orderPackage= PhysicalData.getInstancePhysical(high, width, length, weight, fragil, depth);
+        }catch(BuildException e){
+            message += e.getMessage();
+        }
+
+        if((error = or.setAddress(address)) !=0){
+            message += Check.getErrorMessage(error);
+        }
+
+        if((error = or.setPhoneContact(phoneContact)) !=0){
+            message += Check.getErrorMessage(error);
+        }
+
+        if((error = or.setIdClient(idClient)) !=0){
+            message += Check.getErrorMessage(error);
+        }
+
+        if((error = or.setName(name)) !=0){
+            message += Check.getErrorMessage(error);
+
+        }
+
+        if((error = or.setSurname(surname)) !=0){
+            message += Check.getErrorMessage(error);
+        }
+
+        if((error = or.setDNI(DNI)) !=0){
+            message += Check.getErrorMessage(error);
+        }
+    
+        if(paymentDate != null){
+            if((error = or.setPaymentDate(paymentDate))!=0){
+                message += Check.getErrorMessage(error);
+            }
+        }
+    
+        if(deliveryDate !=null){
+            if((error = or.setDeliveryDate(deliveryDate)) !=0){
+                message += Check.getErrorMessage(error);
+            }
+        }
+
+        if(finishDate  !=null){
+            if((error = or.setFinishDate(finishDate)) !=0){
+                message += Check.getErrorMessage(error);
+            }
+        }
+
+        if(shopCart !=null){
+            if((error = or.setShopCartDetails(shopCart)) !=0){
+                message += Check.getErrorMessage(error);
+            }
+        }
+
+        if(message.length()>0){
+            or = null;
+            throw new BuildException(message);
+        }
+        return or;
+    }
+
+    //Dades del pare
+    public String getInitDate() {
+        if(this.initDate != null){
+            return this.initDate.format(formatter);
+        }
+        return "";
+    }
+    
+    public int setInitDate(String initDate) {
+        this.initDate = LocalDateTime.parse(initDate,formatter);
+        this.status = OrderStatus.CREATED;
+        return 0;
+    }
+    
+    public String getFinishDate() {
+        if(this.finishDate != null){
+                return this.finishDate.format(formatter);
+        }
+        return "";
+    }
+    
+    public int setFinishDate(String finishDate) {
+        this.finishDate = LocalDateTime.parse(finishDate, formatter);
+        this.status = OrderStatus.FINISHED;
+        return 0;
+    }
+
     public String getAddress() {
         return this.address;
     }
@@ -165,6 +269,7 @@ public class Order extends Operation implements Storable{
     public int setDeliveryDate(String deliveryDate) {
         this.deliveryDate = LocalDateTime.parse(deliveryDate, formatter);
         this.status = OrderStatus.DELIVERED;
+
         return 0;
     }
 
@@ -249,99 +354,8 @@ public class Order extends Operation implements Storable{
         ", d: " + this.orderPackage.getDepth();       
     }
     
-    public static Order getInstanceOrder(int reference, String description, String initDate, String address, String phoneContact, 
-        String idClient, String name, String surname, String DNI, String paymentDate, String deliveryDate,  String finishDate, double high, double width, 
-        double depth, double weight, boolean fragil, double length) throws BuildException{
-        String message ="";
-        int error = 0;
-        Order or = new Order();
 
-        try{
-            or.checkOperation(reference, description, initDate, finishDate);
-        }catch(BuildException e){
-            message += e.getMessage();
-        }
-
-        try{
-            or.orderPackage= PhysicalData.getInstancePhysical(high, width, length, weight, fragil, depth);
-        }catch(BuildException e){
-            message += e.getMessage();
-        }
-
-        if((error = or.setAddress(address)) !=0){
-            message += Check.getErrorMessage(error);
-        }
-
-        if((error = or.setPhoneContact(phoneContact)) !=0){
-            message += Check.getErrorMessage(error);
-        }
-        
-        if((error = or.setIdClient(idClient)) !=0){
-            message += Check.getErrorMessage(error);
-        }
-        
-        if((error = or.setName(name)) !=0){
-            message += Check.getErrorMessage(error);
-            
-        }
-        
-        if((error = or.setSurname(surname)) !=0){
-            message += Check.getErrorMessage(error);
-        }
-        
-        if((error = or.setDNI(DNI)) !=0){
-            message += Check.getErrorMessage(error);
-        }
-        
-        if(paymentDate != null){
-            if((error = or.setPaymentDate(paymentDate))!=0){
-                message += Check.getErrorMessage(error);
-            }
-        }
-        
-        if(deliveryDate !=null){
-            if((error = or.setDeliveryDate(deliveryDate)) !=0){
-                message += Check.getErrorMessage(error);
-            }
-        }
-
-        if(message.length()>0){
-            or = null;
-            throw new BuildException(message);
-        }
-        return or;
-    }
-
-    //Dades del pare
-    public String getInitDate() {
-        if(this.initDate != null){
-            return this.initDate.format(formatter);
-        }
-        return "";
-    }
-
-    public int setInitDate(String initDate) {
-        this.initDate = LocalDateTime.parse(initDate,formatter);
-        this.status = OrderStatus.CREATED;
-        return 0;
-    }
-
-    public String getFinishDate() {
-        if(this.finishDate != null){
-            if(this.status == OrderStatus.DELIVERED){
-                return this.finishDate.format(formatter);
-            }
-        }
-        return "";
-    }
-
-    public int setFinishDate(String finishDate) {
-        this.finishDate = LocalDateTime.parse(finishDate, formatter);
-        this.status = OrderStatus.FINISHED;
-        return 0;
-    }
-
-    //ArrayList
+    //Carrito de la compra
     public int getNumDetails(){
         return this.shopCart.size();
     }
@@ -465,7 +479,7 @@ public class Order extends Operation implements Storable{
         return -1;
     }
 
-    public void setShopCartDetails(String shopCart) throws BuildException{
+    public int setShopCartDetails(String shopCart) throws BuildException{
         String namearticles = "";
         int quantity = 0;
         String referencenum = "";
@@ -507,18 +521,19 @@ public class Order extends Operation implements Storable{
         }
         OrderDetail orderDetail = OrderDetail.getInstanceDetail(namearticles, quantity, referencenum, individualPrice, discount, total);
         this.shopCart.add(orderDetail);
+        return 0;
     }
 
     public String getShopCartDetails(){
         String details = "";
         for(int i = 0; i <this.shopCart.size();i++){
             details += 
-            "Nom article: " + this.shopCart.get(i).getNamearticles() + "," + 
-            "Quantitat: " + this.shopCart.get(i).getQuantity() + ","+ 
-            "Referencia: " + this.shopCart.get(i).getReference() + "," + 
-            "Preu individual: " + this.shopCart.get(i).getIndividualPrice() + "," + 
-            "Descompte: " + this.shopCart.get(i).getDiscount() + "," + 
-            "Total: " + this.shopCart.get(i).getTotal() + ";";
+            "nomarticle:" + this.shopCart.get(i).getNamearticles() + "," + 
+            "quantitat:" + this.shopCart.get(i).getQuantity() + ","+ 
+            "referencia:" + this.shopCart.get(i).getReference() + "," + 
+            "preuindividual:" + this.shopCart.get(i).getIndividualPrice() + "," + 
+            "descompte:" + this.shopCart.get(i).getDiscount() + "," + 
+            "total:" + this.shopCart.get(i).getTotal() + ";";
         }
         return details;
     }
@@ -536,6 +551,7 @@ public class Order extends Operation implements Storable{
                 + ", Dia de pagament: " + this.getPaymentDate() 
                 + ", Dia d'entrega: " + this.getDeliveryDate()
                 + ", Data final: " + getFinishDate() 
-                + ", Estat de la compra: " + this.getStatus() ;
+                + ", Estat de la compra: " + this.getStatus() 
+                + ", Carrito de la compra" + getShopCartDetails();
     }
 }
