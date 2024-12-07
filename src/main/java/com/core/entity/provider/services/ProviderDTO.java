@@ -2,7 +2,7 @@ package com.core.entity.provider.services;
 
 public class ProviderDTO {
     private final String name, surname, email, number, address, antiquity, sponsors, socialreason;
-    private int ident, workers;
+    private final int ident, workers;
 
     public ProviderDTO(String name, String surname, String email, String number, String address, String antiquity, int ident, 
     String sponsors, int workers, String socialreason) {

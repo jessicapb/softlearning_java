@@ -1,10 +1,10 @@
 package com.core.entity.order.services;
 
 public class OrderDTO {
-    private String description, initDate, finishDate, address, phoneContact, idClient, name, surname, DNI, paymentDate, deliveryDate, shopCart;
-    private int reference; 
-    private double high, width, depth, weight, length;
-    private boolean fragil;
+    private final String description, initDate, finishDate, address, phoneContact, idClient, name, surname, DNI, paymentDate, deliveryDate, shopCart;
+    private final int reference; 
+    private final double high, width, depth, weight, length;
+    private final boolean fragil;
 
     public OrderDTO(int reference, String description, String initDate, String address, String phoneContact, 
     String idClient, String name, String surname, String DNI, String paymentDate, String deliveryDate, String finishDate, double high, double width, 

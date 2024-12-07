@@ -8,8 +8,8 @@ public class PhysicalData {
     protected double width; //amplada
     protected double length; //longitud
     protected double weight; //pes
-    protected boolean fragil;
-    protected double depth;
+    protected boolean fragil; //fragil
+    protected double depth; //profunditat
     protected double volume; //volum ho calcula la clase
 
     protected PhysicalData(){

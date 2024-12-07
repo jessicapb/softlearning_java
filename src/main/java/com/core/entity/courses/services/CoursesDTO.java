@@ -3,7 +3,7 @@ package com.core.entity.courses.services;
 public class CoursesDTO {
     private final String description, department;
     private final int code, hours, password;
-    private double price;
+    private final double price;
 
     public CoursesDTO(int code, double price, String description, int hours, String department, int password) {
         this.code = code;

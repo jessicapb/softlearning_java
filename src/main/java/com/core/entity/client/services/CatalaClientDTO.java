@@ -111,16 +111,4 @@ public class CatalaClientDTO {
     public void setPaymentcode(String paymentcode) {
         this.paymentcode = paymentcode;
     }
-
-    @Override
-    public String toString() {
-        return "CatalaClientDTO: Nom: " + name + 
-                ", Cognoms: " + surname + 
-                ", Aniversari: " + antiquity + 
-                ", Email: " + email +
-                ", Número telèfon: " + number + 
-                ", Adreça: " + address + 
-                ", Número de soci: " + ident + 
-                ", Mètode de pagament: " + paymentcode + "";
-    }
 }

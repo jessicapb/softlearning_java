@@ -111,16 +111,4 @@ public class CastellaClientDTO {
     public void setPaymentcode(String paymentcode) {
         this.paymentcode = paymentcode;
     }
-
-    @Override
-    public String toString() {
-        return "CastellaClienteDTO: Nombre: " + name + 
-                ", Apellido: " + surname + 
-                ", Cumpleaños: " + antiquity + 
-                ", Email: " + email +
-                ", Número de teléfono: " + number + 
-                ", Dirección: " + address + 
-                ", Número de socio: " + ident + 
-                ", Método de pago: " + paymentcode + "";
-    }
 }

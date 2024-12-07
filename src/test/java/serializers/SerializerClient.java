@@ -34,7 +34,7 @@ public class SerializerClient {
             CatalaClientDTO clientdto = (CatalaClientDTO)formatter.desearialize(xmlclient, CatalaClientDTO.class);
             System.out.println(clientdto);
 
-            // CastelaClient Serializer
+            // CastellaClient Serializer
             System.out.println(" \n Castella Serializer: \n ");
             formatter = SerializersCatalog.getInstace(Serializers.JSON_CAST_CLIENT);
             String jcastclient = formatter.serialize(cast);
@@ -44,7 +44,7 @@ public class SerializerClient {
             CastellaClientDTO castclientDTO = (CastellaClientDTO)formatter.desearialize(jcastclient, CastellaClientDTO.class);
             System.out.println(castclientDTO);
 
-            // CastellaXML
+            // CastellaClient XML
             System.out.println(" \n Castella XML: \n ");
             formatter = SerializersCatalog.getInstace(Serializers.XML_CAST_CLIENT);
             String xmlcastclient = formatter.serialize(cast);
@@ -53,6 +53,7 @@ public class SerializerClient {
             System.out.println(" \n Castella XML Desearialize: \n ");
             CastellaClientDTO castclientdto = (CastellaClientDTO)formatter.desearialize(xmlcastclient, CastellaClientDTO.class);
             System.out.println(castclientdto);
+            
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

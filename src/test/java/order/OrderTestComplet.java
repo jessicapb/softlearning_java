@@ -1,4 +1,4 @@
-package operation;
+package order;
 
 import com.core.entity.exceptions.BuildException;
 import com.core.entity.order.domain.model.Order;
